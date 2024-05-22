@@ -7,6 +7,10 @@ import { initialCards } from './cards';
 
 const cardPlacement = document.querySelector('.places__list');
 
+const imageCardPopup = document.querySelector('.popup_type_image');
+const popupImage = imageCardPopup.querySelector('.popup__image');
+const popupCaption = imageCardPopup.querySelector('.popup__caption');
+
 const editButton = document.querySelector('.profile__edit-button');
 const editPopup = document.querySelector('.popup_type_edit');
 
@@ -27,8 +31,15 @@ function renderCard(cardElement){
 }
 
 initialCards.forEach((cards) => {
-  renderCard(createCard(cards, handleDeleteCard, openPopup, likeFunc))
+  renderCard(createCard(cards, handleDeleteCard, openImagePopup, likeFunc))
 });
+
+function openImagePopup(data){
+  popupImage.src = data.link;
+  popupImage.alt = data.name;
+  popupCaption.textContent = data.name
+  openPopup(imageCardPopup);
+}
 
 function likeFunc(evt){
   evt.target.classList.toggle('card__like-button_is-active');
@@ -57,7 +68,7 @@ function addFormSubmit(evt){
   evt.preventDefault();
   const cardName = formAdd.elements.placeName.value;
   const cardLink = formAdd.elements.link.value;
-  cardPlacement.prepend(createCard({name: cardName, link: cardLink}, handleDeleteCard, openPopup, likeFunc));
+  cardPlacement.prepend(createCard({name: cardName, link: cardLink}, handleDeleteCard, openImagePopup, likeFunc));
   formAdd.reset();
   closePopup(addCardPopup);
 }
