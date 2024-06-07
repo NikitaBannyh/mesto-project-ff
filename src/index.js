@@ -54,15 +54,13 @@ function openImagePopup(data) {
 }
 
 function likeFunc(evt, cardId, likeCountPlacement) {
-  if (evt.target.classList.contains("card__like-button_is-active")) {
-    deleteLike(cardId);
-    evt.target.classList.toggle("card__like-button_is-active");
-    likeCountPlacement.textContent = Number(likeCountPlacement.textContent) - 1;
-  } else {
-    putLike(cardId);
-    evt.target.classList.toggle("card__like-button_is-active");
-    likeCountPlacement.textContent = Number(likeCountPlacement.textContent) + 1;
-  }
+  const isLiked = evt.target.classList.contains("card__like-button_is-active");
+  const likeMethod = isLiked ? deleteLike : putLike;
+  likeMethod(cardId)
+    .then((res) => {
+      likeCountPlacement.textContent = res.likes.length;
+      evt.target.classList.toggle("card__like-button_is-active");
+    })
 }
 
 addButton.addEventListener("click", () => {
@@ -86,10 +84,13 @@ profileButton.addEventListener("click", () => {
 
 function editFormSubmit(evt) {
   evt.preventDefault();
-  profileTitle.textContent = nameInput.value;
-  profileDesc.textContent = descInput.value;
   renderLoading(formEdit, true);
-  editUserInfo(nameInput.value, descInput.value).finally(() => {
+  editUserInfo(nameInput.value, descInput.value)
+  .then(() => {
+    profileTitle.textContent = nameInput.value;
+    profileDesc.textContent = descInput.value;
+  })
+  .finally(() => {
     closePopup(editPopup);
     renderLoading(formEdit, false);
   });
@@ -102,20 +103,13 @@ function addFormSubmit(evt) {
   const cardName = formAdd.elements.placeName.value;
   const cardLink = formAdd.elements.link.value;
   renderLoading(formAdd, true);
-  addCard(cardName, cardLink).finally(() => {
+  addCard(cardName, cardLink)
+  .then((res) => {
+    renderCard(createCard(res, handleDeleteCard, openImagePopup, likeFunc, id), true)
+  })
+  .finally(() => {
     closePopup(addCardPopup);
     renderLoading(formAdd, false);
-    getInitialCards().then((cards) => {
-      for (const card of cards) {
-        if (card.owner._id === id) {
-          renderCard(
-            createCard(card, handleDeleteCard, openImagePopup, likeFunc, id),
-            true
-          );
-          break;
-        }
-      }
-    });
   });
 }
 
@@ -125,8 +119,10 @@ function profileFormSubmit(evt) {
   evt.preventDefault();
   renderLoading(formProfile, true);
   postProfileImage(formProfile.elements.link.value)
+  .then((res) => {
+    profileImg.src = res.avatar;
+  })
   .finally(() => {
-    profileImg.src = formProfile.elements.link.value;
     closePopup(popupProfileEdit);
     renderLoading(formProfile, false);
   });
@@ -170,9 +166,5 @@ Promise.all([getUserInfo(), getInitialCards()])
   });
 
 function renderLoading(form, isloading) {
-  if (isloading) {
-    form.querySelector(".popup__button").textContent = "Сохранение...";
-  } else {
-    form.querySelector(".popup__button").textContent = "Сохранить";
-  }
+  form.querySelector(".popup__button").textContent = isloading ? "Сохранение..." : "Сохранить";
 }

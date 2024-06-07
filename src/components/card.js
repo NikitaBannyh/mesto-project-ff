@@ -16,17 +16,16 @@ export function createCard(data, onDelete, openImagePopup, likeFunc, userId) {
     cardElement
       .querySelector(".card__delete-button")
       .addEventListener("click", (evt) => {
-        onDelete(evt);
-        deleteCard(data._id);
+        deleteCard(data._id)
+        .then(() => {
+          onDelete(evt);
+        })
       });
   } else {
     cardElement.querySelector(".card__delete-button").style.display = "none";
   }
-  for (const user of data.likes) {
-    if (user._id === userId) {
-      likeButton.classList.add("card__like-button_is-active");
-      break;
-    }
+  if(data.likes.some(user => {return user._id === userId})){
+    likeButton.classList.add("card__like-button_is-active");
   }
   cardImg.addEventListener("click", () => {
     openImagePopup(data);

@@ -6,17 +6,21 @@ export const config = {
   }
 }
 
+function handleResponse(res){
+  if(res.ok){
+    return res.json()
+  }
+  return Promise.reject(`Ошибка: ${res.status}`);
+}
 
 export const getInitialCards = () => {
   return fetch(`${config.baseUrl}/cards`, {
     headers : config.headers
   })
   .then(res => {
-    if(res.ok){
-      return res.json()
-    }
-    return Promise.reject(`Ошибка: ${res.status}`);
+    return handleResponse(res)
   })
+  .catch(err => console.log(err))
 }
 
 
@@ -25,11 +29,9 @@ export const getUserInfo = () => {
     headers : config.headers
   })
   .then(res => {
-    if(res.ok){
-      return res.json()
-    }
-    return Promise.reject(`Ошибка: ${res.status}`);
+    return handleResponse(res)
   })
+  .catch(err => console.log(err))
 }
 
 export const editUserInfo = (newName, newAbout) => {
@@ -41,6 +43,10 @@ export const editUserInfo = (newName, newAbout) => {
       about: newAbout
     })
   })
+  .then(res => {
+    return handleResponse(res)
+  })
+  .catch(err => console.log(err))
 }
 
 export const addCard = (name, url) => {
@@ -52,13 +58,21 @@ export const addCard = (name, url) => {
       link: url
     })
   })
+  .then(res => {
+    return handleResponse(res)
+  })
+  .catch(err => console.log(err))
 }
 
 export const deleteCard = (cardId) => {
   return fetch(`${config.baseUrl}/cards/${cardId}`, {
     method: "DELETE",
     headers: config.headers,
-  });
+  })
+  .then(res => {
+    return handleResponse(res)
+  })
+  .catch(err => console.log(err))
 };
 
 export const putLike = (cardId) => {
@@ -66,6 +80,10 @@ export const putLike = (cardId) => {
     method: 'PUT',
     headers : config.headers,
   })
+  .then(res => {
+    return handleResponse(res)
+  })
+  .catch(err => console.log(err))
 }
 
 export const deleteLike = (cardId) => {
@@ -73,6 +91,10 @@ export const deleteLike = (cardId) => {
     method: 'DELETE',
     headers : config.headers,
   })
+  .then(res => {
+    return handleResponse(res)
+  })
+  .catch(err => console.log(err))
 }
 
 export const postProfileImage = (imageUrl) => {
@@ -83,4 +105,8 @@ export const postProfileImage = (imageUrl) => {
       avatar: imageUrl,
     })
   })
+  .then(res => {
+    return handleResponse(res)
+  })
+  .catch(err => console.log(err))
 }
