@@ -1,5 +1,5 @@
 import "./pages/index.css";
-import { createCard, handleDeleteCard } from "./components/card";
+import { createCard} from "./components/card";
 import { openPopup, closePopup } from "./components/modal";
 import { enableValidation, clearValidation } from "./validation";
 import {
@@ -11,6 +11,7 @@ import {
   putLike,
   deleteLike,
   postProfileImage,
+  deleteCard
 } from "./api";
 
 const cardPlacement = document.querySelector(".places__list");
@@ -53,6 +54,13 @@ function openImagePopup(data) {
   openPopup(imageCardPopup);
 }
 
+function handleDeleteCard(event, cardId) {
+  deleteCard(cardId)
+    .then(() => {
+      event.target.closest(".card").remove();
+    })
+}
+
 function likeFunc(evt, cardId, likeCountPlacement) {
   const isLiked = evt.target.classList.contains("card__like-button_is-active");
   const likeMethod = isLiked ? deleteLike : putLike;
@@ -86,9 +94,9 @@ function editFormSubmit(evt) {
   evt.preventDefault();
   renderLoading(formEdit, true);
   editUserInfo(nameInput.value, descInput.value)
-  .then(() => {
-    profileTitle.textContent = nameInput.value;
-    profileDesc.textContent = descInput.value;
+  .then((res) => {
+    profileTitle.textContent = res.name;
+    profileDesc.textContent = res.about;
   })
   .finally(() => {
     closePopup(editPopup);

@@ -1,5 +1,3 @@
-import { deleteCard } from "../api.js";
-
 const cardTemplate = document.querySelector("#card-template").content;
 export function createCard(data, onDelete, openImagePopup, likeFunc, userId) {
   const cardElement = cardTemplate
@@ -16,10 +14,7 @@ export function createCard(data, onDelete, openImagePopup, likeFunc, userId) {
     cardElement
       .querySelector(".card__delete-button")
       .addEventListener("click", (evt) => {
-        deleteCard(data._id)
-        .then(() => {
-          onDelete(evt);
-        })
+        onDelete(evt, data._id);
       });
   } else {
     cardElement.querySelector(".card__delete-button").style.display = "none";
@@ -36,6 +31,4 @@ export function createCard(data, onDelete, openImagePopup, likeFunc, userId) {
   return cardElement;
 }
 
-export function handleDeleteCard(event) {
-  event.target.closest(".card").remove();
-}
+
